@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic, { toFile } from '@anthropic-ai/sdk';
 
 interface WebsiteContext {
   name: string;
@@ -54,26 +54,31 @@ Always maintain the business's tone and brand voice. Be concise and helpful.`;
       content: userMessage,
     });
 
-    const response = await this.client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1024,
-      system: this.getSystemPrompt(),
-      messages: this.conversationHistory.map(msg => ({
-        role: msg.role,
-        content: msg.content,
-      })),
-    });
+    try {
+      const response = await this.client.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 1024,
+        system: this.getSystemPrompt(),
+        messages: this.conversationHistory.map(msg => ({
+          role: msg.role,
+          content: msg.content,
+        })) as any,
+      });
 
-    const assistantMessage = response.content[0].type === 'text'
-      ? response.content[0].text
-      : 'I apologize, I was unable to process your request.';
+      const assistantMessage = response.content[0].type === 'text'
+        ? response.content[0].text
+        : 'I apologize, I was unable to process your request.';
 
-    this.conversationHistory.push({
-      role: 'assistant',
-      content: assistantMessage,
-    });
+      this.conversationHistory.push({
+        role: 'assistant',
+        content: assistantMessage,
+      });
 
-    return assistantMessage;
+      return assistantMessage;
+    } catch (error) {
+      console.error('Chat error:', error);
+      throw error;
+    }
   }
 
   getConversationHistory(): ChatMessage[] {

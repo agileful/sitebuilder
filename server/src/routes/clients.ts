@@ -2,13 +2,11 @@ import express, { Request, Response } from 'express';
 import { ChatbotService } from '../services/chatbot';
 import { WebsiteDesignService } from '../services/websiteDesign';
 import { SubdomainManager } from '../services/subdomainManager';
+import { clientsData, chatbotInstances } from '../state';
 
 const router = express.Router();
 const designService = new WebsiteDesignService();
 const subdomainManager = new SubdomainManager();
-
-const clientsData: any = {};
-const chatbotInstances: Map<string, ChatbotService> = new Map();
 
 interface CreateClientRequest {
   clientName: string;
@@ -44,7 +42,12 @@ router.post('/create', (req: Request, res: Response) => {
 
     const clientConfig = {
       ...subdomain,
-      ...clientData,
+      clientName: clientData.clientName,
+      industry: clientData.industry,
+      services: clientData.services,
+      about: clientData.about,
+      aboutText: clientData.about,
+      contact: clientData.contact,
       brandColors,
       createdAt: new Date(),
     };

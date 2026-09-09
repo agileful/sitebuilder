@@ -1,9 +1,7 @@
 import express, { Request, Response } from 'express';
-import { ChatbotService } from '../services/chatbot';
+import { chatbotInstances } from '../state';
 
 const router = express.Router();
-
-const chatbotInstances: Map<string, ChatbotService> = new Map();
 
 router.post('/', async (req: Request, res: Response) => {
   try {
