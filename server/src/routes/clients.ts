@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
 import { ChatbotService } from '../services/chatbot';
-import { WebsiteDesignService } from '../services/websiteDesign';
+import { PremiumWebsiteDesignService } from '../services/premiumWebsiteDesign';
 import { SubdomainManager } from '../services/subdomainManager';
 import { clientsData, chatbotInstances } from '../state';
 
 const router = express.Router();
-const designService = new WebsiteDesignService();
+const designService = new PremiumWebsiteDesignService();
 const subdomainManager = new SubdomainManager();
 
 interface CreateClientRequest {
@@ -88,7 +88,7 @@ router.get('/:clientId/website', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Client not found' });
   }
 
-  const html = designService.generateModernDesign(client);
+  const html = (designService as any).generatePremiumDesign(client);
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(html);
 });
